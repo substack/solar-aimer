@@ -1,12 +1,9 @@
 var suncalc = require('suncalc');
-var inspect = require('object-inspect');
 var wsock = require('websocket-stream');
 var ws = wsock('ws://' + location.host);
 
-window.addEventListener('devicemotion', function (ev) {
-    var a = ev.accelerationIncludingGravity;
-    if (a.x === null) return;
-    write(['accel',a.x,a.y]);
+window.addEventListener('deviceorientation', function (ev) {
+    write(['orientation',ev.alpha,ev.beta,ev.gamma]);
 });
 
 setInterval(check, 5000);
