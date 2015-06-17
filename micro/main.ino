@@ -6,11 +6,10 @@
 #include <AFMotor.h>
 
 AF_DCMotor lmotor(1);
-AF_DCMotor rmotor(3);
+AF_DCMotor rmotor(2);
 
 void setup() {
   Serial.begin(9600);           // set up Serial library at 9600 bps
-  Serial.println("Motor test!");
 
   // turn on motor
   lmotor.setSpeed(200);
