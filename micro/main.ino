@@ -21,48 +21,21 @@ void setup() {
 }
 
 void loop() {
-  uint8_t i;
-  
-  //Serial.print("tick");
+  byte cmd = 0;
+ 
   if (Serial.available() > 0) {
-    Serial.print((char) (Serial.read()));
+    cmd = Serial.read();
   }
-  
-  /*
-  lmotor.run(FORWARD);
-  rmotor.run(FORWARD);
-  for (i=0; i<255; i++) {
-    lmotor.setSpeed(i);  
-    rmotor.setSpeed(i);  
-    delay(10);
- }
- 
-  for (i=255; i!=0; i--) {
-    lmotor.setSpeed(i);  
-    rmotor.setSpeed(i);  
-    delay(10);
- }
-  
-  Serial.print("tock");
-
-  lmotor.run(BACKWARD);
-  rmotor.run(BACKWARD);
-  for (i=0; i<255; i++) {
-    lmotor.setSpeed(i);  
-    rmotor.setSpeed(i);  
-    delay(10);
- }
- 
-  for (i=255; i!=0; i--) {
-    lmotor.setSpeed(i);  
-    rmotor.setSpeed(i);  
-    delay(10);
- }
-  
-
-  Serial.print("tech");
-  lmotor.run(RELEASE);
-  rmotor.run(RELEASE);
-  delay(1000);
-  */
+  if (cmd == 'F') {
+    rmotor.run(FORWARD);
+    lmotor.run(FORWARD);
+  }
+  else if (cmd == 'B') {
+    rmotor.run(BACKWARD);
+    lmotor.run(BACKWARD);
+  }
+  else if (cmd == ' ') {
+    rmotor.run(RELEASE);
+    lmotor.run(RELEASE);
+  }
 }
