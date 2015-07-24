@@ -12,10 +12,10 @@ void setup() {
   Serial.begin(9600);           // set up Serial library at 9600 bps
 
   // turn on motor
-  lmotor.setSpeed(200);
+  lmotor.setSpeed(50);
   lmotor.run(RELEASE);
 
-  rmotor.setSpeed(200);
+  rmotor.setSpeed(50);
   rmotor.run(RELEASE);
 }
 
