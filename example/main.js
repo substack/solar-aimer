@@ -9,7 +9,7 @@ var ori;
 window.addEventListener('deviceorientation', function (ev) {
   ori = ev;
 });
-var times = 6;
+var times = 20;
 
 setInterval(check, 1000);
 function check () {
@@ -22,41 +22,40 @@ function onpos (pos) {
     pos.coords.latitude,
     pos.coords.longitude
   );
-  var azd = spos.azimuth * 180 / Math.PI + 90;
-  var alt = spos.altitude * 180 / Math.PI;
+  var azd = spos.azimuth * 180 / Math.PI + 270 - 360;
+  var alt = 90 - spos.altitude * 180 / Math.PI;
   
   //write([ 'azd=', azd, 'alt=', alt ]);
   //write([ 'ora=', ori.alpha, 'orb=', ori.beta ]);
   //write([ 'da=', azd - ori.alpha, 'db=', alt - ori.beta ]);
-  show(
-    'AZI:' + (azd - ori.alpha) + '\n'
-    + 'ALT:' + (alt - ori.beta) + '\n'
-  );
+  var dazi = azd - ori.alpha;
+  var dalt = alt - ori.beta;
   
-  if (Math.abs(azd - ori.alpha) < 5) {
-    // within 5 deg
-    write([ 'AZD 0' ]);
-  }
-  else if (azd < ori.alpha) {
-    write([ 'W:', azd, ori.alpha ]);
-    port.write(Array(times+1).join('w'));
-  }
-  else {
-    write([ 'S:', azd, ori.alpha ]);
-    port.write(Array(times+1).join('s'));
-  }
+  while (dazi < -180) dazi += 360;
+  while (dazi > 360) dazi -= 360;
   
-  if (Math.abs(alt - ori.beta) < 5) {
+  show('AZI:' + dazi + '\n' + 'ALT:' + dalt + '\n');
+  
+  // a adds altitude, d removes altitude
+  if (Math.abs(dalt) < 2) {
     // within 5 deg
-    write([ 'ALT 0' ]);
   }
-  else if (alt < ori.beta) {
-    write([ 'A:', alt, ori.beta ]);
+  else if (dalt < 0) {
     port.write(Array(times+1).join('a'));
   }
-  else {
-    write([ 'D:', alt, ori.beta ]);
+  else if (dalt > 0) {
     port.write(Array(times+1).join('d'));
+  }
+  
+  // s adds azimuth, w removes azimuth
+  if (Math.abs(dazi) < 2) {
+    // within 5 deg
+  }
+  else if (dazi < 0) {
+    port.write(Array(times+1).join('s'));
+  }
+  else if (dazi > 0) {
+    port.write(Array(times+1).join('w'));
   }
 }
 
