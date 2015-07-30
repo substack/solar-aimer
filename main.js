@@ -12,10 +12,12 @@ var elems = {
   left: null, right: null
 }
 function show (key) {
-  if (elems[key]) elems[key].style.visibility = 'visible'
+  var elem = typeof key === 'string' ? elems[key] : key
+  if (elem) elem.style.visibility = 'visible'
 }
 function hide (key) {
-  if (elems[key]) elems[key].style.visibility = 'hidden'
+  var elem = typeof key === 'string' ? elems[key] : key
+  if (elem) elem.style.visibility = 'hidden'
 }
 
 var load = require('load-svg')
@@ -30,19 +32,22 @@ load('/aim.svg', function (err, svg) {
 
   function onresize () {
     if (window.innerWidth < window.innerHeight) {
-      svg.width = window.innerWidth
+      svg.setAttribute('width', window.innerWidth)
     }
     else {
-      svg.height = window.innerHeight
+      svg.setAttribute('height', window.innerHeight)
     }
   }
 })
 
 var state = {}
-var pre = document.createElement('pre')
-document.body.appendChild(pre)
 
-navigator.geolocation.getCurrentPosition(function (pos) {
+setInterval((function f () {
+  navigator.geolocation.getCurrentPosition(onpos)
+  return f
+})(), 1000 * 60)
+
+function onpos (pos) {
   var sun = suncalc.getPosition(
     new Date(pos.timestamp),
     pos.coords.latitude,
@@ -50,12 +55,12 @@ navigator.geolocation.getCurrentPosition(function (pos) {
   );
   state.sun = {
     azimuth: sun.azimuth * 180 / Math.PI,
-    altitude: sun.altitude * 180 / Math.PI
+    altitude: 90 - sun.altitude * 180 / Math.PI
   }
   update(state)
   //var azd = spos.azimuth * 180 / Math.PI + 270 - 360;
   //var alt = 90 - spos.altitude * 180 / Math.PI;
-})
+}
 
 function update (state) {
   var a = 360 - state.orientation.alpha
@@ -87,16 +92,16 @@ function update (state) {
     var gdiff = state.sun.azimuth - g
     var gdist = Math.min(gdiff, 360 - gdiff)
     if (gdist > 5 && gdiff < 180) {
-      show(elems.west)
-    }
-    else if (gdist > 5 && gdiff >= 180) {
       show(elems.east)
     }
+    else if (gdist > 5 && gdiff >= 180) {
+      show(elems.west)
+    }
   }
+  //write(state)
 }
 function write (msg) {
   console.log(msg)
-  pre.textContent = JSON.stringify(msg, null, 2)
   ws.write(JSON.stringify(msg, null, 2) + '\n')
 }
 function abg (obj) {
