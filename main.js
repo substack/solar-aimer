@@ -1,6 +1,39 @@
-var suncalc = require('suncalc');
-var wsock = require('websocket-stream');
-var ws = wsock('ws://' + location.host);
+var suncalc = require('suncalc')
+var wsock = require('websocket-stream')
+var ws = wsock('ws://' + location.host)
+
+var state = {}
+var pre = document.createElement('pre')
+document.body.appendChild(pre)
+
+function write (msg) {
+  console.log(msg)
+  pre.textContent = JSON.stringify(msg, null, 2)
+  ws.write(JSON.stringify(msg, null, 2) + '\n')
+}
+function abg (obj) {
+  if (!obj) return {}
+  return {
+    alpha: obj.alpha,
+    beta: obj.beta,
+    gamma: obj.gamma
+  }
+}
+
+window.addEventListener('deviceorientation', function (ev) {
+  state.orientation = abg(ev)
+  write(state)
+})
+window.addEventListener('devicemotion', function (ev) {
+  state.motion = {
+    acceleration: abg(ev.acceleration),
+    accelerationIncludingGravity: abg(ev.accelerationIncludingGravity),
+    rotationRate: abg(ev.rotationRate)
+  }
+  write(state)
+})
+
+/*
 var serial = require('webaudio-serial-tx');
 var port = serial({ baud: 9600, polarity: 1 });
 port.start();
@@ -58,15 +91,4 @@ function onpos (pos) {
     port.write(Array(times+1).join('w'));
   }
 }
-
-var pre = document.createElement('pre');
-document.body.appendChild(pre);
-
-function show (msg) {
-  pre.textContent = msg;
-}
-
-function write (msg) {
-  console.log(msg);
-  ws.write(JSON.stringify(msg) + '\n');
-}
+*/
