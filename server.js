@@ -1,5 +1,5 @@
 var ecstatic = require('ecstatic');
-var st = ecstatic(__dirname);
+var st = ecstatic(__dirname + '/public');
 var http = require('http');
 
 var server = http.createServer(st);

@@ -1,7 +1,13 @@
 {
   "scripts": {
-    "watch": "watchify main.js -o public/bundle.js -dv",
     "build": "browserify main.js -o public/bundle.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "watch": "watchify main.js -o public/bundle.js -dv"
+  },
+  "dependencies": {
+    "ecstatic": "^0.8.0",
+    "load-svg": "^1.0.0",
+    "suncalc": "^1.6.0",
+    "websocket-stream": "^1.5.1"
   }
 }
