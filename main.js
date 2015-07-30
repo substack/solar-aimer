@@ -25,6 +25,17 @@ load('/aim.svg', function (err, svg) {
     elems[key].style.visibility = 'hidden'
   })
   document.body.appendChild(svg)
+  window.addEventListener('resize', onresize)
+  onresize()
+
+  function onresize () {
+    if (window.innerWidth < window.innerHeight) {
+      svg.width = window.innerWidth
+    }
+    else {
+      svg.height = window.innerHeight
+    }
+  }
 })
 
 var state = {}
