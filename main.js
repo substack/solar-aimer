@@ -1,11 +1,9 @@
 var suncalc = require('suncalc')
-var wsock = require('websocket-stream')
-var ws = wsock('ws://' + location.host)
-//var serial = require('webaudio-serial-tx');
-//var port = serial({ baud: 9600, polarity: 1 });
-//port.start();
-// a adds altitude, d removes altitude
-// s adds azimuth, w removes azimuth
+//var wsock = require('websocket-stream')
+//var ws = wsock('ws://' + location.host)
+var serial = require('webaudio-serial-tx');
+var port = serial({ baud: 9600, polarity: 1 });
+port.start();
 
 var elems = {
   north: null, west: null, east: null, south: null,
@@ -21,7 +19,7 @@ function hide (key) {
 }
 
 var load = require('load-svg')
-load('/aim.svg', function (err, svg) {
+load('aim.svg', function (err, svg) {
   Object.keys(elems).forEach(function (key) {
     elems[key] = svg.getElementById(key)
     elems[key].style.visibility = 'hidden'
@@ -62,7 +60,11 @@ function onpos (pos) {
   //var alt = 90 - spos.altitude * 180 / Math.PI;
 }
 
+var last = -1
 function update (state) {
+  if (Date.now() - last < 1000) return
+  last = Date.now()
+ 
   var a = 360 - state.orientation.alpha
   var b = state.orientation.beta
   var g = state.orientation.gamma
@@ -80,29 +82,40 @@ function update (state) {
   if (state.sun) {
     var bdiff = state.sun.altitude - b
     var bdist = Math.min(bdiff, 360 - bdiff)
+    // a adds altitude, d removes altitude
     if (bdist > 5 && bdiff < 180) {
       show(elems.north)
+      send('a')
     }
     else if (bdist > 5 && bdiff >= 180) {
       show(elems.south)
+      send('d')
     }
   }
 
   if (state.sun) {
     var gdiff = state.sun.azimuth - g
     var gdist = Math.min(gdiff, 360 - gdiff)
+    // s adds azimuth, w removes azimuth
     if (gdist > 5 && gdiff < 180) {
       show(elems.east)
+      send('s')
     }
     else if (gdist > 5 && gdiff >= 180) {
       show(elems.west)
+      send('w')
     }
   }
   //write(state)
 }
+
+function send (c) {
+  port.write(Array(10+1).join(c))
+}
+
 function write (msg) {
   console.log(msg)
-  ws.write(JSON.stringify(msg, null, 2) + '\n')
+  //ws.write(JSON.stringify(msg, null, 2) + '\n')
 }
 function abg (obj) {
   if (!obj) return {}

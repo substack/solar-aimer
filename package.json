@@ -8,6 +8,7 @@
     "ecstatic": "^0.8.0",
     "load-svg": "^1.0.0",
     "suncalc": "^1.6.0",
+    "webaudio-serial-tx": "^1.2.1",
     "websocket-stream": "^1.5.1"
   }
 }
